@@ -10,8 +10,7 @@ const mongoose = require("mongoose");
 // App
 const app = express();
 
-// db
-// Connect
+// db Connect
 mongoose
   .connect("mongodb://127.0.0.1/proppi")
   .then(() => console.log("Connected to MongoDB..."))

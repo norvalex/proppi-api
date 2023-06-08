@@ -22,9 +22,14 @@ router.post("/", async (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   const property = new Property({
-    name: req.body.name,
-    startDate: req.body.startDate,
+    erf: req.body.erf,
+    addressLine1: req.body.addressLine1,
+    addressLine2: req.body.addressLine2,
+    city: req.body.city,
+    purchaseDate: req.body.purchaseDate,
+    saleDate: req.body.saleDate,
   });
+  property.setName();
   await property.save();
 
   // TODO: Handle error when trying to POST a duplicate name

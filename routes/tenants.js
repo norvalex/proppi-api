@@ -1,16 +1,16 @@
 const express = require("express");
-const { Person, personValidation } = require("../models/person");
+const { Tenant, tenantValidation } = require("../models/tenant");
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const tenants = await Person.find().sort("name");
+  const tenants = await Tenant.find().sort("name");
 
   res.send(tenants);
 });
 
 router.get("/:id", async (req, res) => {
-  const tenant = await Person.findById(req.params.id);
+  const tenant = await Tenant.findById(req.params.id);
   if (!tenant) return res.status(400).send("Tenant not found");
 
   res.send(tenant);
@@ -18,10 +18,10 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   // TODO Authenticate user is logged in
-  const { error } = personValidation(req.body);
+  const { error } = tenantValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const tenant = new Person({
+  const tenant = new Tenant({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
@@ -36,11 +36,11 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   // TODO Authenticate user is logged in
-  const { error } = personValidation(req.body);
+  const { error } = tenantValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   // TODO: what happens if only one parameter is provided
-  let tenant = await Person.findByIdAndUpdate(
+  let tenant = await Tenant.findByIdAndUpdate(
     req.params.id,
     {
       firstName: req.body.firstName,
@@ -59,7 +59,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   // TODO Authenticate user is logged in
   // Verify user is admin
-  const tenant = await Person.findByIdAndDelete(req.params.id);
+  const tenant = await Tenant.findByIdAndDelete(req.params.id);
 
   if (!tenant) return res.status(400).send("Tenant not found");
 

@@ -8,7 +8,6 @@ const propertySchema = new mongoose.Schema({
     required: true,
     minLength: 5,
     maxLength: 255,
-    unique: true,
   },
   startDate: {
     type: String,
@@ -35,3 +34,4 @@ function propertyValidation(property) {
 
 module.exports.Property = Property;
 module.exports.propertyValidation = propertyValidation;
+module.exports.propertySchema = propertySchema;

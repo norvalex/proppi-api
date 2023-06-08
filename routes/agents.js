@@ -1,17 +1,16 @@
 const express = require("express");
-const { Entity, entityValidation } = require("../models/entity");
-const { Person } = require("../models/person");
+const { Agent, agentValidation } = require("../models/agent");
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-  const agents = await Entity.find().sort("name");
+  const agents = await Agent.find().sort("name");
 
   res.send(agents);
 });
 
 router.get("/:id", async (req, res) => {
-  const agent = await Entity.findById(req.params.id);
+  const agent = await Agent.findById(req.params.id);
   if (!agent) return res.status(400).send("Agent not found");
 
   res.send(agent);
@@ -19,23 +18,17 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   // TODO Authenticate user is logged in
-  const { error } = entityValidation(req.body);
+  const { error } = agentValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const contactPerson = await Person.findById(req.body.contactPersonId);
-  if (!contactPerson) return res.status(400).send("Contact person not found");
-
-  console.log(contactPerson);
-
-  const agent = new Entity({
-    name: req.body.name,
-    contactPerson: {
-      _id: contactPerson._id.toString(),
-      firstName: contactPerson.firstName,
-      lastName: contactPerson.lastName,
-      email: contactPerson.email,
-      phone: contactPerson.phone,
-    },
+  const agent = new Agent({
+    agentEntityName: req.body.agentEntityName,
+    contactPersonFirstName: req.body.contactPersonFirstName,
+    contactPersonLastName: req.body.contactPersonLastName,
+    email: req.body.email,
+    phone: req.body.phone,
+    logoImage: req.body.logoImage,
+    vatInclManagementFeePercentage: req.body.vatInclManagementFeePercentage,
   });
   await agent.save();
 
@@ -46,22 +39,18 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   // TODO Authenticate user is logged in
-  const { error } = entityValidation(req.body);
+  const { error } = agentValidation(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const contactPerson = await Person.findById(req.body.contactId);
-  if (!contactPerson) return res.status(400).send("Contact person not found");
-
   // TODO: what happens if only one parameter is provided
-  const agent = await Entity.findByIdAndUpdate(req.params.id, {
-    name: req.body.name,
-    constactPerson: {
-      _id: contactPerson._id,
-      firstName: contactPerson.firstName,
-      lastName: contactPerson.lastName,
-      email: contactPerson.email,
-      phone: contactPerson.phone,
-    },
+  const agent = await Agent.findByIdAndUpdate(req.params.id, {
+    agentEntityName: req.body.agentEntityName,
+    contactPersonFirstName: req.body.contactPersonFirstName,
+    contactPersonLastName: req.body.contactPersonLastName,
+    email: req.body.email,
+    phone: req.body.phone,
+    logoImage: req.body.logoImage,
+    vatInclManagementFeePercentage: req.body.vatInclManagementFeePercentage,
   });
 
   if (!agent) return res.status(400).send("Agent not found");
@@ -72,7 +61,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   // TODO Authenticate user is logged in
   // Verify user is admin
-  const agent = await Entity.findByIdAndDelete(req.params.id);
+  const agent = await Agent.findByIdAndDelete(req.params.id);
 
   if (!agent) return res.status(400).send("Agent not found");
 

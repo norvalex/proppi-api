@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 
 // Schema
-const personSchema = new mongoose.Schema({
+const tenantSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: true,
@@ -29,19 +29,19 @@ const personSchema = new mongoose.Schema({
 });
 
 // Model
-const Person = mongoose.model("Person", personSchema);
+const Tenant = mongoose.model("Tenant", tenantSchema);
 
 // Validation
-function personValidation(person) {
+function tenantValidation(tenant) {
   const schema = Joi.object({
     firstName: Joi.string().min(3).max(255).required(),
     lastName: Joi.string().min(3).max(255).required(),
     email: Joi.string().min(3).max(255).email().required(),
     phone: Joi.string().min(3).max(15),
   });
-  return schema.validate(person);
+  return schema.validate(tenant);
 }
 
-module.exports.Person = Person;
-module.exports.personValidation = personValidation;
-module.exports.personSchema = personSchema;
+module.exports.Tenant = Tenant;
+module.exports.tenantValidation = tenantValidation;
+module.exports.tenantSchema = tenantSchema;

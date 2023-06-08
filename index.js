@@ -1,18 +1,22 @@
 const express = require("express");
+const Joi = require("joi");
+Joi.objectId = require("joi-objectid")(Joi);
 const debug = require("debug")("app:startup");
 const properties = require("./routes/properties");
 const tenants = require("./routes/tenants");
 const agents = require("./routes/agents");
+const rentals = require("./routes/rentals");
 const home = require("./routes/home");
 const logger = require("./middleware/logger");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const config = require('config')
 // App
 const app = express();
 
 // db Connect
 mongoose
-  .connect("mongodb://127.0.0.1/proppi")
+  .connect(config.get('dbConnectionString'))
   .then(() => console.log("Connected to MongoDB..."))
   .catch((err) => console.log("Unable to connect to MongoDB..." + err));
 
@@ -36,6 +40,7 @@ app.use(logger);
 app.use("/api/properties", properties);
 app.use("/api/tenants", tenants);
 app.use("/api/agents", agents);
+app.use("/api/rentals", rentals);
 app.get("/", home);
 
 // Listen

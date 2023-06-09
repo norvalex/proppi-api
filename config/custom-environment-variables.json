@@ -1,3 +1,4 @@
 {
+    "jwtPrivateKey":"proppi_jwtPrivateKey",
     "dbConnectionString":"proppi_dbConnectionString"
 }

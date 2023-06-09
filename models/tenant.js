@@ -28,6 +28,10 @@ const tenantSchema = new mongoose.Schema({
   },
 });
 
+tenantSchema.virtual('name').get(function () {
+  return `${this.firstName} ${this.lastName}`;
+});
+
 // Model
 const Tenant = mongoose.model("Tenant", tenantSchema);
 

@@ -3,12 +3,6 @@ const Joi = require("joi");
 
 // Schema
 const propertySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    minLength: 5,
-    maxLength: 255,
-  },
   erf: {
     type: String,
     required: true,
@@ -42,9 +36,9 @@ const propertySchema = new mongoose.Schema({
   },
 });
 
-propertySchema.methods.setName = function () {
-  this.name = `${this.addressLine2} - Erf ${this.erf} (${this.addressLine1})`;
-};
+propertySchema.virtual('name').get(function () {
+  return `${this.addressLine2} - Erf ${this.erf} (${this.addressLine1})`;
+});
 
 // Model
 const Property = mongoose.model("Property", propertySchema);

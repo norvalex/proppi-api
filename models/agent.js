@@ -3,19 +3,19 @@ const Joi = require("joi");
 
 // Schema
 const agentSchema = new mongoose.Schema({
-  agentEntityName: {
+  entityName: {
     type: String,
     required: true,
     minLength: 3,
     maxLength: 255,
   },
-  contactPersonFirstName: {
+  firstName: {
     type: String,
     required: true,
     minLength: 3,
     maxLength: 255,
   },
-  contactPersonLastName: {
+  lastName: {
     type: String,
     required: true,
     minLength: 3,
@@ -43,15 +43,20 @@ const agentSchema = new mongoose.Schema({
   },
 });
 
+agentSchema.virtual('name').get(function () {
+  return `${this.firstName} ${this.lastName}`;
+});
+
+
 // Model
 const Agent = mongoose.model("Agent", agentSchema);
 
 // Validation
 function agentValidation(agent) {
   const schema = Joi.object({
-    agentEntityName: Joi.string().min(3).max(255).required(),
-    contactPersonFirstName: Joi.string().min(3).max(255).required(),
-    contactPersonLastName: Joi.string().min(3).max(255).required(),
+    entityName: Joi.string().min(3).max(255).required(),
+    firstName: Joi.string().min(3).max(255).required(),
+    lastName: Joi.string().min(3).max(255).required(),
     email: Joi.string().min(3).max(255).email().required(),
     phone: Joi.string().min(3).max(15),
     vatInclManagementFeePercentage: Joi.number().min(0).max(1).required(),

@@ -22,9 +22,9 @@ router.post("/", async (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   const agent = new Agent({
-    agentEntityName: req.body.agentEntityName,
-    contactPersonFirstName: req.body.contactPersonFirstName,
-    contactPersonLastName: req.body.contactPersonLastName,
+    entityName: req.body.entityName,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
     email: req.body.email,
     phone: req.body.phone,
     logoImage: req.body.logoImage,
@@ -44,9 +44,9 @@ router.put("/:id", async (req, res) => {
 
   // TODO: what happens if only one parameter is provided
   const agent = await Agent.findByIdAndUpdate(req.params.id, {
-    agentEntityName: req.body.agentEntityName,
-    contactPersonFirstName: req.body.contactPersonFirstName,
-    contactPersonLastName: req.body.contactPersonLastName,
+    entityName: req.body.entityName,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
     email: req.body.email,
     phone: req.body.phone,
     logoImage: req.body.logoImage,

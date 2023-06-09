@@ -29,7 +29,6 @@ router.post("/", async (req, res) => {
     purchaseDate: req.body.purchaseDate,
     saleDate: req.body.saleDate,
   });
-  property.setName();
   await property.save();
 
   // TODO: Handle error when trying to POST a duplicate name

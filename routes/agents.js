@@ -43,15 +43,19 @@ router.put("/:id", async (req, res) => {
   if (error) return res.status(400).send(error.details[0].message);
 
   // TODO: what happens if only one parameter is provided
-  const agent = await Agent.findByIdAndUpdate(req.params.id, {
-    entityName: req.body.entityName,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    phone: req.body.phone,
-    logoImage: req.body.logoImage,
-    vatInclManagementFeePercentage: req.body.vatInclManagementFeePercentage,
-  });
+  const agent = await Agent.findByIdAndUpdate(
+    req.params.id,
+    {
+      entityName: req.body.entityName,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      phone: req.body.phone,
+      logoImage: req.body.logoImage,
+      vatInclManagementFeePercentage: req.body.vatInclManagementFeePercentage,
+    },
+    { new: true }
+  );
 
   if (!agent) return res.status(400).send("Agent not found");
   // TODO: Handle error when trying to PUT a duplicate name

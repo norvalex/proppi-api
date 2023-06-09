@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   // Only retrieve properties which has not been archived
-  // const properties = await Property.find({ archived: { $ne: true } }).sort(
-  const properties = await Property.find().sort("name");
+  const properties = await Property.find({ archived: { $ne: true } }).sort("name");
+  // const properties = await Property.find().sort("name");
 
   res.send(properties);
 });

@@ -45,6 +45,8 @@ app.get("/", home);
 
 // Listen
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   debug("Listening on port 3000...");
 });
+
+module.exports = server

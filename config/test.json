@@ -1,0 +1,3 @@
+{
+    "dbConnectionString":"mongodb://127.0.0.1/proppi_test"
+}

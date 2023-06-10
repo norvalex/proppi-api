@@ -105,7 +105,4 @@ describe(endpoint, () => {
       expect(res.body).toHaveProperty("purchaseDate");
     });
   });
-
-  
 });
-

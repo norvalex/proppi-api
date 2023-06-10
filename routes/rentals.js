@@ -3,6 +3,7 @@ const { Rental, rentalValidation } = require("../models/rental");
 const { Property } = require("../models/property");
 const { Tenant } = require("../models/tenant");
 const { Agent } = require("../models/agent");
+const _ = require("lodash");
 
 const router = express.Router();
 
@@ -13,11 +14,11 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const rentals = Rental.findById(req.params.id);
+  const rental = Rental.findById(req.params.id);
 
   if (!rental) return res.status(400).send("Rental not found");
 
-  res.send(rentals);
+  res.send(rental);
 });
 
 router.post("/", async (req, res) => {

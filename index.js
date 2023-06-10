@@ -7,12 +7,15 @@ const tenants = require("./routes/tenants");
 const agents = require("./routes/agents");
 const rentals = require("./routes/rentals");
 const users = require("./routes/users");
+const auth = require("./routes/auth");
 const home = require("./routes/home");
 const logger = require("./middleware/logger");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const config = require("config");
 const winston = require('winston')
+const moment = require('moment')
+
 // App
 const app = express();
 
@@ -63,6 +66,7 @@ app.use("/api/tenants", tenants);
 app.use("/api/agents", agents);
 app.use("/api/rentals", rentals);
 app.use("/api/users", users);
+app.use("/api/auth", auth);
 app.get("/", home);
 
 // Listen

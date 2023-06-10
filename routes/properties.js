@@ -1,5 +1,6 @@
 const express = require("express");
 const { Property, propertyValidation } = require("../models/property");
+const { Rental } = require("../models/rental");
 
 const router = express.Router();
 
@@ -16,6 +17,14 @@ router.get("/:id", async (req, res) => {
   if (!property) return res.status(400).send("Property not found");
 
   res.send(property);
+});
+
+router.get("/:id/rentals", async (req, res) => {
+  const property = await Property.findById(req.params.id);
+  if (!property) return res.status(400).send("Property not found");
+
+  const rentals = await Rental.find({"property._id": req.params.id})
+  res.send(rentals);
 });
 
 router.post("/", async (req, res) => {

@@ -1,73 +1,94 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
-const moment = require('moment')
+const moment = require("moment");
 
 // Schema
-const rentalSchema = new mongoose.Schema({
-  property: {
-    type: new mongoose.Schema({
-      _id: {
-        type: String,
-      },
-      name: {
-        type: String,
-      },
-    }),
-    required: true,
+const schemaOptions = {
+  toObject: {
+    virtuals: true,
   },
-  agent: {
-    type: new mongoose.Schema({
-      _id: {
-        type: String,
-      },
-      entityName: {
-        type: String,
-      },
-      name: {
-        type: String,
-      },
-      email: {
-        type: String,
-      },
-      phone: {
-        type: String,
-      },
-      vatInclManagementFeePercentage: {
-        type: String,
-      },
-    }),
-    required: true,
+  toJSON: {
+    virtuals: true,
   },
-  tenant: {
-    type: new mongoose.Schema({
-      _id: {
-        type: String,
-      },
-      name: {
-        type: String,
-      },
-    }),
-    required: true,
+};
+
+const rentalSchema = new mongoose.Schema(
+  {
+    property: {
+      type: new mongoose.Schema({
+        _id: {
+          type: String,
+        },
+        name: {
+          type: String,
+        },
+      }),
+      required: true,
+    },
+    agent: {
+      type: new mongoose.Schema({
+        _id: {
+          type: String,
+        },
+        entityName: {
+          type: String,
+        },
+        name: {
+          type: String,
+        },
+        email: {
+          type: String,
+        },
+        phone: {
+          type: String,
+        },
+        vatInclManagementFeePercentage: {
+          type: String,
+        },
+      }),
+      required: true,
+    },
+    tenant: {
+      type: new mongoose.Schema({
+        _id: {
+          type: String,
+        },
+        name: {
+          type: String,
+        },
+      }),
+      required: true,
+    },
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
+    },
+    monthlyRentalAmount: {
+      type: Number,
+      min: 0,
+      max: 1000000,
+      required: true,
+    },
   },
-  startDate: {
-    type: Date,
-    required: true,
-  },
-  endDate: {
-    type: Date,
-    required: true,
-  },
-  monthlyRentalAmount: {
-    type: Number,
-    min: 0,
-    max: 1000000,
-    required: true,
-  },
+  schemaOptions
+);
+
+rentalSchema.virtual("duration").get(function () {
+  return moment(this.endDate)
+    .add(1, "days")
+    .diff(moment(this.startDate), "months", true);
 });
 
-rentalSchema.virtual('duration').get(function() {
-  return moment(this.endDate).add(1, 'days').diff(moment(this.startDate),'months', true)
-})
+rentalSchema.virtual("isActive").get(function () {
+  const now = moment();
+  if (moment(this.startDate) < now && moment(this.endDate).add(1, "days") > now)
+    return true;
+  else return false;
+});
 
 // Model
 const Rental = mongoose.model("Rental", rentalSchema);

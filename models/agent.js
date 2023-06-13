@@ -52,7 +52,7 @@ agentSchema.virtual('name').get(function () {
 const Agent = mongoose.model("Agent", agentSchema);
 
 // Validation
-function agentValidation(agent) {
+function validateAgent(agent, requestType) {
   const schema = Joi.object({
     entityName: Joi.string().min(3).max(255).required(),
     firstName: Joi.string().min(3).max(255).required(),
@@ -65,5 +65,5 @@ function agentValidation(agent) {
 }
 
 module.exports.Agent = Agent;
-module.exports.agentValidation = agentValidation;
+module.exports.validateAgent = validateAgent;
 module.exports.agentSchema = agentSchema;

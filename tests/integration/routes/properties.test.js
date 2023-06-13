@@ -1,5 +1,7 @@
 const request = require("supertest");
 const { Property } = require("../../../models/property");
+const { User } = require("../../../models/user");
+
 let server;
 const endpoint = "/api/properties";
 describe(endpoint, () => {
@@ -79,29 +81,40 @@ describe(endpoint, () => {
   });
 
   describe("POST /", () => {
-    let property;
+    let token;
 
-    beforeEach(async () => {
-      property = new Property({
+    function exec() {
+      return request(server).post(endpoint).set("x-auth-token", token).send({
         erf: "123",
         addressLine1: "addr1",
         addressLine2: "addr2",
         city: "city1",
         purchaseDate: "2020-01-01",
       });
-      await property.save();
+    }
+
+    beforeEach(async () => {
+      token = User().generateAuthToken();
     });
+
+    it("should return a 401 id user not auth", async () => {
+      token = "";
+      const res = await exec();
+
+      expect(res.status).toBe(401);
+    });
+
     // TODO: should return a 404 if id is invalid
     // TODO: should return a 404 if property not found
     it("should return property if id is valid", async () => {
-      const res = await request(server).get(`${endpoint}/${property._id}`);
+      const res = await exec();
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("_id", property._id.toString());
-      expect(res.body).toHaveProperty("erf", property.erf);
-      expect(res.body).toHaveProperty("addressLine1", property.addressLine1);
-      expect(res.body).toHaveProperty("addressLine2", property.addressLine2);
-      expect(res.body).toHaveProperty("city", property.city);
+      expect(res.body).toHaveProperty("_id");
+      expect(res.body).toHaveProperty("erf", "123");
+      expect(res.body).toHaveProperty("addressLine1", "addr1");
+      expect(res.body).toHaveProperty("addressLine2", "addr2");
+      expect(res.body).toHaveProperty("city", "city1");
       expect(res.body).toHaveProperty("purchaseDate");
     });
   });

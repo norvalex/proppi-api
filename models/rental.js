@@ -94,7 +94,7 @@ rentalSchema.virtual("isActive").get(function () {
 const Rental = mongoose.model("Rental", rentalSchema);
 
 // Validation
-function rentalValidation(rental, requestType) {
+function validateRental(rental, requestType) {
   const schema = Joi.object({
     propertyId: Joi.objectId().alter({
       post: (schema) => schema.required(),
@@ -123,4 +123,4 @@ function rentalValidation(rental, requestType) {
 }
 
 module.exports.Rental = Rental;
-module.exports.rentalValidation = rentalValidation;
+module.exports.validateRental = validateRental;

@@ -1,9 +1,12 @@
 const express = require("express");
-const { Rental, rentalValidation } = require("../models/rental");
+const { Rental, validateRental } = require("../models/rental");
 const { Property } = require("../models/property");
 const { Tenant } = require("../models/tenant");
 const { Agent } = require("../models/agent");
-const _ = require("lodash");
+const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
+const validateObjectId = require("../middleware/validateObjectId");
+const validate = require("../middleware/validate");
 
 const router = express.Router();
 
@@ -13,7 +16,7 @@ router.get("/", async (req, res) => {
   res.send(rentals);
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", validateObjectId, async (req, res) => {
   const rental = Rental.findById(req.params.id);
 
   if (!rental) return res.status(400).send("Rental not found");
@@ -21,10 +24,7 @@ router.get("/:id", async (req, res) => {
   res.send(rental);
 });
 
-router.post("/", async (req, res) => {
-  const { error } = rentalValidation(req.body, "post");
-  if (error) return res.status(400).send(error.details[0].message);
-
+router.post("/", [auth, validate(validateRental, "post")], async (req, res) => {
   const property = await Property.findOne({
     _id: req.body.propertyId,
     archived: { $ne: true },
@@ -64,26 +64,27 @@ router.post("/", async (req, res) => {
   res.send(rental);
 });
 
-router.put("/:id", async (req, res) => {
-  const { error } = rentalValidation(req.body, "put");
-  if (error) return res.status(400).send(error.details[0].message);
+router.put(
+  "/:id",
+  [auth, validateObjectId, validate(validateRental, "put")],
+  async (req, res) => {
+    const rental = await Rental.findByIdAndUpdate(
+      req.params.id,
+      {
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        monthlyRentalAmount: req.body.monthlyRentalAmount,
+      },
+      { new: true }
+    );
 
-  const rental = await Rental.findByIdAndUpdate(
-    req.params.id,
-    {
-      startDate: req.body.startDate,
-      endDate: req.body.endDate,
-      monthlyRentalAmount: req.body.monthlyRentalAmount,
-    },
-    { new: true }
-  );
+    if (!rental) return res.status(400).send("Rental not found");
 
-  if (!rental) return res.status(400).send("Rental not found");
+    res.send(rental);
+  }
+);
 
-  res.send(rental);
-});
-
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
   const rental = await Rental.findByIdAndDelete(req.params.id);
 
   if (!rental) return res.status(400).send("Rental not found");

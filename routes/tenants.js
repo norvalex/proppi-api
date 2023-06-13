@@ -1,7 +1,10 @@
 const express = require("express");
-const { Tenant, tenantValidation } = require("../models/tenant");
-
+const { Tenant, validateTenant } = require("../models/tenant");
 const router = express.Router();
+const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
+const validateObjectId = require("../middleware/validateObjectId");
+const validate = require("../middleware/validate");
 
 router.get("/", async (req, res) => {
   const tenants = await Tenant.find().sort("name");
@@ -9,18 +12,14 @@ router.get("/", async (req, res) => {
   res.send(tenants);
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", validateObjectId, async (req, res) => {
   const tenant = await Tenant.findById(req.params.id);
   if (!tenant) return res.status(400).send("Tenant not found");
 
   res.send(tenant);
 });
 
-router.post("/", async (req, res) => {
-  // TODO Authenticate user is logged in
-  const { error } = tenantValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-
+router.post("/", [auth, validate(validateTenant, "post")], async (req, res) => {
   const tenant = new Tenant({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -34,31 +33,29 @@ router.post("/", async (req, res) => {
   res.send(tenant);
 });
 
-router.put("/:id", async (req, res) => {
-  // TODO Authenticate user is logged in
-  const { error } = tenantValidation(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+router.put(
+  "/:id",
+  [auth, validateObjectId, validate(validateTenant, "put")],
+  async (req, res) => {
+    // TODO: what happens if only one parameter is provided
+    let tenant = await Tenant.findByIdAndUpdate(
+      req.params.id,
+      {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        phone: req.body.phone,
+      },
+      { new: true }
+    );
 
-  // TODO: what happens if only one parameter is provided
-  let tenant = await Tenant.findByIdAndUpdate(
-    req.params.id,
-    {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      phone: req.body.phone,
-    },
-    { new: true }
-  );
+    if (!tenant) return res.status(400).send("Tenant not found");
+    // TODO: Handle error when trying to PUT a duplicate name
+    res.send(tenant);
+  }
+);
 
-  if (!tenant) return res.status(400).send("Tenant not found");
-  // TODO: Handle error when trying to PUT a duplicate name
-  res.send(tenant);
-});
-
-router.delete("/:id", async (req, res) => {
-  // TODO Authenticate user is logged in
-  // Verify user is admin
+router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
   const tenant = await Tenant.findByIdAndDelete(req.params.id);
 
   if (!tenant) return res.status(400).send("Tenant not found");

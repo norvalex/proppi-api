@@ -36,7 +36,7 @@ tenantSchema.virtual('name').get(function () {
 const Tenant = mongoose.model("Tenant", tenantSchema);
 
 // Validation
-function tenantValidation(tenant) {
+function validateTenant(tenant, requestType) {
   const schema = Joi.object({
     firstName: Joi.string().min(3).max(255).required(),
     lastName: Joi.string().min(3).max(255).required(),
@@ -47,5 +47,5 @@ function tenantValidation(tenant) {
 }
 
 module.exports.Tenant = Tenant;
-module.exports.tenantValidation = tenantValidation;
+module.exports.validateTenant = validateTenant;
 module.exports.tenantSchema = tenantSchema;

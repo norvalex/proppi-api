@@ -64,7 +64,7 @@ propertySchema.virtual("name").get(function () {
 const Property = mongoose.model("Property", propertySchema);
 
 // Validation
-function propertyValidation(property, requestType) {
+function validateProperty(property, requestType) {
   const schema = Joi.object({
     erf: Joi.string().min(1).max(10).required(),
     addressLine1: Joi.string().min(5).max(255).required(),
@@ -106,5 +106,5 @@ function propertyValidation(property, requestType) {
 }
 
 module.exports.Property = Property;
-module.exports.propertyValidation = propertyValidation;
+module.exports.validateProperty = validateProperty;
 module.exports.propertySchema = propertySchema;

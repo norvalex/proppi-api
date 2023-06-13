@@ -1,5 +1,4 @@
 const express = require("express");
-const debug = require("debug")("app:startup");
 const winston = require("winston");
 
 const app = express();

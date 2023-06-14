@@ -66,6 +66,7 @@ router.put(
         saleDate: req.body.saleDate,
         salePrice: req.body.salePrice,
         saleFees: req.body.saleFees,
+        archived: req.body.archived
       },
       { new: true }
     );
@@ -80,13 +81,7 @@ router.put(
 
 router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
   // Only soft delete properties if fullDeleteConfirmed != true, else delete
-  const property = await Property.findByIdAndUpdate(
-    req.params.id,
-    {
-      archived: true,
-    },
-    { new: true }
-  );
+  const property = await Property.findByIdAndDelete(req.params.id);
 
   if (!property) return res.status(404).send("Property not found");
 

@@ -335,6 +335,16 @@ describe(endpoint, () => {
       });
     });
 
+    describe("payload.archived", () => {
+      it("should return a 400 if archived is posted", async () => {
+        payload.archived = true;
+
+        const res = await exec();
+
+        expect(res.status).toBe(400);
+      });
+    });
+
     it("should save the property if it is valid", async () => {
       await exec();
 
@@ -434,6 +444,12 @@ describe(endpoint, () => {
 
         expect(res.status).toBe(400);
       });
+
+      it("should set erf if posted", async () => {
+        const res = await exec();
+
+        expect(res.body).toHaveProperty("erf", payload.erf);
+      });
     });
 
     describe("payload.addressLine1", () => {
@@ -460,6 +476,12 @@ describe(endpoint, () => {
 
         expect(res.status).toBe(400);
       });
+
+      it("should set addressLine1 if posted", async () => {
+        const res = await exec();
+
+        expect(res.body).toHaveProperty("addressLine1", payload.addressLine1);
+      });
     });
 
     describe("payload.addressLine2", () => {
@@ -469,6 +491,14 @@ describe(endpoint, () => {
         const res = await exec();
 
         expect(res.status).toBe(400);
+      });
+
+      it("should set addressLine2 if posted", async () => {
+        payload.addressLine2 = "addressline2_new";
+
+        const res = await exec();
+
+        expect(res.body).toHaveProperty("addressLine2", payload.addressLine2);
       });
     });
 
@@ -495,6 +525,12 @@ describe(endpoint, () => {
         const res = await exec();
 
         expect(res.status).toBe(400);
+      });
+
+      it("should set city if posted", async () => {
+        const res = await exec();
+
+        expect(res.body).toHaveProperty("city", payload.city);
       });
     });
 
@@ -524,6 +560,14 @@ describe(endpoint, () => {
 
         expect(res.status).toBe(400);
       });
+
+      it("should set purchaseDate if posted", async () => {
+        payload.purchaseDate = "2022-01-03";
+
+        const res = await exec();
+
+        expect(res.body).toHaveProperty("purchaseDate");
+      });
     });
 
     describe("payload.purchasePrice", () => {
@@ -533,6 +577,14 @@ describe(endpoint, () => {
         const res = await exec();
 
         expect(res.status).toBe(400);
+      });
+
+      it("should set purchasePrice if posted", async () => {
+        payload.purchasePrice = 1;
+
+        const res = await exec();
+
+        expect(res.body).toHaveProperty("purchasePrice", 1);
       });
     });
 
@@ -544,53 +596,105 @@ describe(endpoint, () => {
 
         expect(res.status).toBe(400);
       });
+
+      it("should set purchaseFees if posted", async () => {
+        payload.purchaseFees = 1;
+
+        const res = await exec();
+
+        expect(res.body).toHaveProperty("purchaseFees", 1);
+      });
     });
 
-    describe("payload.salesDate", () => {
-      it("should return a 400 if salesDate is in wrong format", async () => {
-        payload.salesDate = "23-06-2021";
+    describe("payload.saleDate", () => {
+      it("should return a 400 if saleDate is in wrong format", async () => {
+        payload.saleDate = "23-06-2021";
 
         const res = await exec();
 
         expect(res.status).toBe(400);
       });
 
-      it("should return a 400 if salesDate is an invalid date", async () => {
+      it("should return a 400 if saleDate is an invalid date", async () => {
         // TODO: date validation not great - as '2021-06-31' passed..
         // so suspect only tests if day is less than 31, no matter what month
-        payload.salesDate = "2021-06-32";
+        payload.saleDate = "2021-06-32";
 
         const res = await exec();
 
         expect(res.status).toBe(400);
       });
 
-      it("should return a 400 if salesDate is before purchaseDate", async () => {
-        payload.salesDate = moment(payload.purchaseDate).subtract(1, "days");
+      it("should return a 400 if saleDate is before purchaseDate", async () => {
+        payload.saleDate = moment(payload.purchaseDate)
+          .subtract(1, "days")
+          .toString();
 
         const res = await exec();
 
         expect(res.status).toBe(400);
+      });
+
+      it("should set saleDate if posted", async () => {
+        payload.saleDate = "2022-01-03";
+
+        const res = await exec();
+
+        expect(res.body).toHaveProperty("saleDate");
       });
     });
 
-    describe("payload.salesPrice", () => {
+    describe("payload.salePrice", () => {
       it("should return a 400 if salesPrice is less than 0", async () => {
-        payload.salesPrice = -1;
+        payload.salePrice = -1;
 
         const res = await exec();
 
         expect(res.status).toBe(400);
       });
+
+      it("should set salePrice if posted", async () => {
+        payload.salePrice = 1;
+
+        const res = await exec();
+
+        expect(res.body).toHaveProperty("salePrice", 1);
+      });
     });
 
-    describe("payload.salesFees", () => {
-      it("should return a 400 if salesFees is less than 0", async () => {
-        payload.purchaseFees = -1;
+    describe("payload.saleFees", () => {
+      it("should return a 400 if saleFees is less than 0", async () => {
+        payload.saleFees = -1;
 
         const res = await exec();
 
         expect(res.status).toBe(400);
+      });
+
+      it("should set salesFees if posted", async () => {
+        payload.saleFees = 1;
+
+        const res = await exec();
+
+        expect(res.body).toHaveProperty("saleFees", 1);
+      });
+    });
+
+    describe("payload.archived", () => {
+      it("should return a 400 if archived is not bool", async () => {
+        payload.archived = "xxx";
+
+        const res = await exec();
+
+        expect(res.status).toBe(400);
+      });
+
+      it("should set archived if posted", async () => {
+        payload.archived = true;
+
+        const res = await exec();
+
+        expect(res.body).toHaveProperty("archived", true);
       });
     });
 
@@ -675,12 +779,12 @@ describe(endpoint, () => {
       expect(res.status).toBe(404);
     });
 
-    it("should delete (archive) property from db", async () => {
+    it("should delete property from db", async () => {
       await exec();
 
       const res = await Property.findOne({ erf: property.erf });
 
-      expect(res).toHaveProperty("archived", true);
+      expect(res).toBeNull();
     });
 
     it("should return property if deleted (archived)", async () => {
@@ -692,7 +796,6 @@ describe(endpoint, () => {
       expect(res.body).toHaveProperty("addressLine1", property.addressLine1);
       expect(res.body).toHaveProperty("city", property.city);
       expect(res.body).toHaveProperty("purchaseDate");
-      expect(res.body).toHaveProperty("archived", true);
     });
   });
 });

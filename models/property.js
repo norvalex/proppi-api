@@ -80,7 +80,7 @@ function validateProperty(property, requestType) {
       .alter({
         post: (schema) => schema.forbidden(),
       }),
-    salePricePrice: Joi.number()
+    salePrice: Joi.number()
       .min(0)
       .alter({
         post: (schema) => schema.forbidden(),
@@ -90,6 +90,11 @@ function validateProperty(property, requestType) {
       .alter({
         post: (schema) => schema.forbidden(),
       }),
+
+    // Not allowed to set archived on POST
+    archived: Joi.boolean().alter({
+      post: (schema) => schema.forbidden(),
+    }),
   });
 
   return schema.tailor(requestType).validate(property);

@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", validateObjectId, async (req, res) => {
   const rental = Rental.findById(req.params.id);
 
-  if (!rental) return res.status(400).send("Rental not found");
+  if (!rental) return res.status(404).send("Rental not found");
 
   res.send(rental);
 });
@@ -29,13 +29,13 @@ router.post("/", [auth, validate(validateRental, "post")], async (req, res) => {
     _id: req.body.propertyId,
     archived: { $ne: true },
   });
-  if (!property) return res.status(400).send("Property not found");
+  if (!property) return res.status(404).send("Property not found");
 
   const agent = await Agent.findById(req.body.agentId);
-  if (!agent) return res.status(400).send("Agent not found");
+  if (!agent) return res.status(404).send("Agent not found");
 
   const tenant = await Tenant.findById(req.body.tenantId);
-  if (!tenant) return res.status(400).send("Tenant not found");
+  if (!tenant) return res.status(404).send("Tenant not found");
 
   const rental = new Rental({
     property: {
@@ -78,7 +78,7 @@ router.put(
       { new: true }
     );
 
-    if (!rental) return res.status(400).send("Rental not found");
+    if (!rental) return res.status(404).send("Rental not found");
 
     res.send(rental);
   }
@@ -87,7 +87,7 @@ router.put(
 router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
   const rental = await Rental.findByIdAndDelete(req.params.id);
 
-  if (!rental) return res.status(400).send("Rental not found");
+  if (!rental) return res.status(404).send("Rental not found");
 
   res.send(rental);
 });

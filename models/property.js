@@ -17,8 +17,6 @@ const propertySchema = new mongoose.Schema({
   },
   addressLine2: {
     type: String,
-    required: true,
-    minLength: 5,
     maxLength: 255,
   },
   city: {
@@ -50,14 +48,11 @@ const propertySchema = new mongoose.Schema({
     type: Number,
     min: 0,
   },
-  archived: {
-    type: Boolean,
-    default: false,
-  },
+  archived: Boolean,
 });
 
 propertySchema.virtual("name").get(function () {
-  return `${this.addressLine2} - Erf ${this.erf} (${this.addressLine1})`;
+  return `${this.addressLine2 | ""} - Erf ${this.erf} (${this.addressLine1})`;
 });
 
 // Model
@@ -68,7 +63,7 @@ function validateProperty(property, requestType) {
   const schema = Joi.object({
     erf: Joi.string().min(1).max(10).required(),
     addressLine1: Joi.string().min(5).max(255).required(),
-    addressLine2: Joi.string().min(5).max(255),
+    addressLine2: Joi.string().max(255),
     city: Joi.string().min(5).max(255).required(),
     purchaseDate: Joi.date()
       .iso()
@@ -95,11 +90,6 @@ function validateProperty(property, requestType) {
       .alter({
         post: (schema) => schema.forbidden(),
       }),
-
-    // Not allowed to archive a record on POST.
-    archived: Joi.boolean().alter({
-      post: (schema) => schema.forbidden(),
-    }),
   });
 
   return schema.tailor(requestType).validate(property);

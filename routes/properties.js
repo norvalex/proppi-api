@@ -19,14 +19,14 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", validateObjectId, async (req, res) => {
   const property = await Property.findById(req.params.id);
-  if (!property) return res.status(400).send("Property not found");
+  if (!property) return res.status(404).send("Property not found");
 
   res.send(property);
 });
 
 router.get("/:id/rentals", validateObjectId, async (req, res) => {
   const property = await Property.findById(req.params.id);
-  if (!property) return res.status(400).send("Property not found");
+  if (!property) return res.status(404).send("Property not found");
 
   const rentals = await Rental.find({ "property._id": req.params.id });
   res.send(rentals);
@@ -66,12 +66,11 @@ router.put(
         saleDate: req.body.saleDate,
         salePrice: req.body.salePrice,
         saleFees: req.body.saleFees,
-        archived: req.body.archived,
       },
       { new: true }
     );
 
-    if (!property) return res.status(400).send("Property not found");
+    if (!property) return res.status(404).send("Property not found");
 
     // TODO: Check if current rental date extends beyond saleDate. If it does, then the rentalDate needs updating
 
@@ -89,7 +88,7 @@ router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
     { new: true }
   );
 
-  if (!property) return res.status(400).send("Property not found");
+  if (!property) return res.status(404).send("Property not found");
 
   res.send(property);
 });

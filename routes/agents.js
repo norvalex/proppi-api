@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", validateObjectId, async (req, res) => {
   const agent = await Agent.findById(req.params.id);
-  if (!agent) return res.status(400).send("Agent not found");
+  if (!agent) return res.status(404).send("Agent not found");
 
   res.send(agent);
 });
@@ -56,7 +56,7 @@ router.put(
       { new: true }
     );
 
-    if (!agent) return res.status(400).send("Agent not found");
+    if (!agent) return res.status(404).send("Agent not found");
     // TODO: Handle error when trying to PUT a duplicate name
     res.send(agent);
   }
@@ -65,7 +65,7 @@ router.put(
 router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
   const agent = await Agent.findByIdAndDelete(req.params.id);
 
-  if (!agent) return res.status(400).send("Agent not found");
+  if (!agent) return res.status(404).send("Agent not found");
 
   res.send(agent);
 });

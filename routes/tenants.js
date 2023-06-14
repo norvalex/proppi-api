@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", validateObjectId, async (req, res) => {
   const tenant = await Tenant.findById(req.params.id);
-  if (!tenant) return res.status(400).send("Tenant not found");
+  if (!tenant) return res.status(404).send("Tenant not found");
 
   res.send(tenant);
 });
@@ -49,7 +49,7 @@ router.put(
       { new: true }
     );
 
-    if (!tenant) return res.status(400).send("Tenant not found");
+    if (!tenant) return res.status(404).send("Tenant not found");
     // TODO: Handle error when trying to PUT a duplicate name
     res.send(tenant);
   }
@@ -58,7 +58,7 @@ router.put(
 router.delete("/:id", [auth, admin, validateObjectId], async (req, res) => {
   const tenant = await Tenant.findByIdAndDelete(req.params.id);
 
-  if (!tenant) return res.status(400).send("Tenant not found");
+  if (!tenant) return res.status(404).send("Tenant not found");
 
   res.send(tenant);
 });
